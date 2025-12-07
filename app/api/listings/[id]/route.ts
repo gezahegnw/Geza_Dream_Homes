@@ -4,7 +4,7 @@ import { fetchListings } from "@/lib/listings";
 import { sessionCookie, verifySessionToken } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Require authenticated and approved user
     const cookieStore = await cookies();
@@ -18,7 +18,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     if (!dbUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     if (!dbUser.approved) return NextResponse.json({ error: "Forbidden: account pending approval" }, { status: 403 });
 
-    const propertyId = params.id;
+    const { id } = await params;
+    const propertyId = id;
     
     // Fetch a larger set of listings using the same search approach as main page
     // Use city-only search to match the main listings page behavior

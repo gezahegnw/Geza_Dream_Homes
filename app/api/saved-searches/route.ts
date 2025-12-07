@@ -6,7 +6,7 @@ import { cookies } from 'next/headers';
 // GET /api/saved-searches - Fetches all saved searches for the current user
 export async function GET(req: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get(sessionCookie.name)?.value;
     if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -27,7 +27,7 @@ export async function GET(req: Request) {
 // POST /api/saved-searches - Creates a new saved search
 export async function POST(req: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get(sessionCookie.name)?.value;
     if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
 // DELETE /api/saved-searches?id=... - Deletes a saved search
 export async function DELETE(req: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get(sessionCookie.name)?.value;
     if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 

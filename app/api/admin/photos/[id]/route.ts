@@ -3,9 +3,10 @@ import { unlink } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const photoId = decodeURIComponent(params.id);
+    const { id } = await params;
+    const photoId = decodeURIComponent(id);
     
     // Parse the photo ID format: "album-filename" or "existing-filename"
     let album = '';
