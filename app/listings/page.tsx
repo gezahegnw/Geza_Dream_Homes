@@ -161,14 +161,7 @@ export default function ListingsPage() {
 
   const handleListingClick = (listingId: string, e: React.MouseEvent) => {
     e.preventDefault();
-    
-    if (isAuthenticated === false) {
-      // Redirect to login with return URL
-      window.location.href = `/login?redirect=/listings/${listingId}`;
-      return;
-    }
-    
-    // If authenticated, navigate to listing
+    // Navigate to listing without authentication check
     window.location.href = `/listings/${listingId}`;
   };
 

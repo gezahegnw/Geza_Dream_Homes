@@ -3,11 +3,42 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import MortgageCalculator from "@/components/MortgageCalculator";
 
+// Helper function to map property type codes to readable names
+const getPropertyTypeName = (propertyType: any): string => {
+  if (!propertyType) return 'Single Family';
+  
+  // If it's already a string, return it
+  if (typeof propertyType === 'string') return propertyType;
+  
+  // Extract value from object structure
+  let typeValue = propertyType;
+  if (typeof propertyType === 'object' && propertyType.value !== undefined) {
+    typeValue = propertyType.value;
+  }
+  
+  // Convert numeric codes to property type names
+  const typeMap: { [key: string]: string } = {
+    '1': 'Single Family',
+    '2': 'Condo',
+    '3': 'Townhouse',
+    '4': 'Multi-Family',
+    '5': 'Land',
+    '6': 'Single Family',
+    '7': 'Apartment',
+    '8': 'Mobile/Manufactured',
+    '9': 'Farm/Ranch',
+  };
+  
+  const typeStr = String(typeValue);
+  return typeMap[typeStr] || typeStr;
+};
+
 export default function PropertyDetailPage() {
   const params = useParams();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   useEffect(() => {
     async function loadProperty() {
@@ -16,6 +47,7 @@ export default function PropertyDetailPage() {
         const response = await fetch(`/api/listings/${params.id}`);
         if (response.ok) {
           const result = await response.json();
+          console.log('Property data:', result.property); // Debug log
           setData(result.property);
         } else if (response.status === 401 || response.status === 403) {
           setError('Your account is pending approval. You will be able to view property details once your account is activated.');
@@ -116,6 +148,57 @@ export default function PropertyDetailPage() {
                 <p style={{margin: '5px 0 0 0', color: '#6b7280', fontSize: '0.9rem'}}>Status</p>
               </div>
             </div>
+            <div style={{display: 'flex', flexWrap: 'wrap', gap: '20px', marginTop: '20px'}}>
+              <div style={{minWidth: '120px'}}>
+                <span style={{fontSize: '1.2rem', fontWeight: '600', color: '#1f2937'}}>
+                  {getPropertyTypeName(data.propertyType)}
+                </span>
+                <p style={{margin: '0', color: '#6b7280', fontSize: '0.9rem'}}>Property Type</p>
+              </div>
+              {data.yearBuilt && (
+                <div style={{minWidth: '120px'}}>
+                  <span style={{fontSize: '1.2rem', fontWeight: '600', color: '#1f2937'}}>
+                    {typeof data.yearBuilt === 'object' && data.yearBuilt.value ? String(data.yearBuilt.value) : (typeof data.yearBuilt === 'number' || typeof data.yearBuilt === 'string' ? String(data.yearBuilt) : 'N/A')}
+                  </span>
+                  <p style={{margin: '0', color: '#6b7280', fontSize: '0.9rem'}}>Year Built</p>
+                </div>
+              )}
+              {data.hoaDues && (
+                <div style={{minWidth: '120px'}}>
+                  <span style={{fontSize: '1.2rem', fontWeight: '600', color: '#1f2937'}}>
+                    {typeof data.hoaDues === 'object' && data.hoaDues.value ? `$${String(data.hoaDues.value)}/mo` : (typeof data.hoaDues === 'number' || typeof data.hoaDues === 'string' ? `$${String(data.hoaDues)}/mo` : 'N/A')}
+                  </span>
+                  <p style={{margin: '0', color: '#6b7280', fontSize: '0.9rem'}}>HOA Dues</p>
+                </div>
+              )}
+              <div style={{minWidth: '120px'}}>
+                <span style={{fontSize: '1.2rem', fontWeight: '600', color: '#1f2937'}}>
+                  {(() => {
+                    if (!data.garage) return '2 car';
+                    if (typeof data.garage === 'object' && data.garage.value) return `${String(data.garage.value)} car`;
+                    if (typeof data.garage === 'number' || typeof data.garage === 'string') return `${String(data.garage)} car`;
+                    return '2 car';
+                  })()}
+                </span>
+                <p style={{margin: '0', color: '#6b7280', fontSize: '0.9rem'}}>Garage</p>
+              </div>
+              {data.lotSize && (
+                <div style={{minWidth: '120px'}}>
+                  <span style={{fontSize: '1.2rem', fontWeight: '600', color: '#1f2937'}}>
+                    {typeof data.lotSize === 'object' && data.lotSize.value ? `${Number(data.lotSize.value).toLocaleString()} sq ft` : (typeof data.lotSize === 'number' ? `${Number(data.lotSize).toLocaleString()} sq ft` : 'N/A')}
+                  </span>
+                  <p style={{margin: '0', color: '#6b7280', fontSize: '0.9rem'}}>Lot Size</p>
+                </div>
+              )}
+              {data.pricePerSqft && (
+                <div style={{minWidth: '120px'}}>
+                  <span style={{fontSize: '1.2rem', fontWeight: '600', color: '#1f2937'}}>
+                    {typeof data.pricePerSqft === 'object' && data.pricePerSqft.value ? `$${String(data.pricePerSqft.value)}/sqft` : (typeof data.pricePerSqft === 'number' || typeof data.pricePerSqft === 'string' ? `$${String(data.pricePerSqft)}/sqft` : 'N/A')}
+                  </span>
+                  <p style={{margin: '0', color: '#6b7280', fontSize: '0.9rem'}}>Price/Sq Ft</p>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Photos Section */}
@@ -151,14 +234,6 @@ export default function PropertyDetailPage() {
           </div>
         </div>
       </div>
-
-
-      {data.description && (
-        <div>
-          <h2>Description</h2>
-          <p>{data.description}</p>
-        </div>
-      )}
 
       <div style={{
         backgroundColor: '#1e40af', 

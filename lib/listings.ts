@@ -274,7 +274,7 @@ export async function fetchListings(query: ListingsQuery = {}): Promise<Listing[
       baths: p?.baths?.value ?? p?.baths,
       sqft: p?.sqFt?.value ?? p?.sqFt,
       photos: p?.photos?.items || (p?.primary_photo?.href ? [p.primary_photo.href] : []) || (p?.thumbnail ? [p.thumbnail] : []),
-      description: p?.description || p?.remarks, // Attempt to get description
+      description: p?.description || p?.remarks || p?.listingRemarks || p?.publicRemarks || p?.mlsDescription || p?.propertyDescription || p?.details?.description, // Attempt to get description
       status: p?.status || p?.listingStatus || p?.mlsStatus || p?.propertyStatus || 'Active', // Try multiple status field names
       propertyType: p?.propertyType || p?.property_type || p?.type,
       yearBuilt: p?.yearBuilt || p?.year_built || p?.built_year,
@@ -310,7 +310,7 @@ export async function fetchListings(query: ListingsQuery = {}): Promise<Listing[
               baths: p?.baths?.value ?? p?.baths,
               sqft: p?.sqFt?.value ?? p?.sqFt,
               photos: p?.photos?.items || (p?.primary_photo?.href ? [p.primary_photo.href] : []) || (p?.thumbnail ? [p.thumbnail] : []),
-              description: p?.description || p?.remarks, // Attempt to get description
+              description: p?.description || p?.remarks || p?.listingRemarks || p?.publicRemarks || p?.mlsDescription || p?.propertyDescription || p?.details?.description, // Attempt to get description
               status: p?.status || p?.listingStatus || p?.mlsStatus || p?.propertyStatus || 'Active', // Try multiple status field names
               propertyType: p?.propertyType || p?.property_type || p?.type,
               yearBuilt: p?.yearBuilt || p?.year_built || p?.built_year,
@@ -354,7 +354,7 @@ export async function fetchListings(query: ListingsQuery = {}): Promise<Listing[
               baths: p?.baths?.value ?? p?.baths,
               sqft: p?.sqFt?.value ?? p?.sqFt,
               photos: p?.photos?.items || (p?.primary_photo?.href ? [p.primary_photo.href] : []) || (p?.thumbnail ? [p.thumbnail] : []),
-              description: p?.description || p?.remarks, // Attempt to get description
+              description: p?.description || p?.remarks || p?.listingRemarks || p?.publicRemarks || p?.mlsDescription || p?.propertyDescription || p?.details?.description, // Attempt to get description
               status: p?.status || p?.listingStatus || p?.mlsStatus || p?.propertyStatus || 'Active', // Try multiple status field names
               url: p?.url ? `https://www.redfin.com${p.url}` : undefined,
             }));
